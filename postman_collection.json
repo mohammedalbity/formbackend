@@ -1,0 +1,463 @@
+{
+  "info": {
+    "name": "Form.io Backend API",
+    "description": "Complete API collection for Form.io Laravel Backend with Arabic/English support",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"language\": \"en\",\n  \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": ["{{base_url}}"],
+              "path": ["register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@formio.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "Get User Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user",
+              "host": ["{{base_url}}"],
+              "path": ["user"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"language\": \"ar\",\n  \"timezone\": \"Asia/Riyadh\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"password123\",\n  \"password\": \"newpassword123\",\n  \"password_confirmation\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["change-password"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": ["{{base_url}}"],
+              "path": ["logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Forms",
+      "item": [
+        {
+          "name": "Get All Forms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/forms?page=1&per_page=10",
+              "host": ["{{base_url}}"],
+              "path": ["forms"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Public Forms",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/forms/public",
+              "host": ["{{base_url}}"],
+              "path": ["forms", "public"]
+            }
+          }
+        },
+        {
+          "name": "Create Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Contact Form\",\n  \"title_ar\": \"نموذج الاتصال\",\n  \"description\": \"A simple contact form\",\n  \"description_ar\": \"نموذج اتصال بسيط\",\n  \"schema\": {\n    \"components\": [\n      {\n        \"type\": \"textfield\",\n        \"key\": \"name\",\n        \"label\": \"Name\",\n        \"validate\": {\n          \"required\": true\n        }\n      },\n      {\n        \"type\": \"email\",\n        \"key\": \"email\",\n        \"label\": \"Email\",\n        \"validate\": {\n          \"required\": true\n        }\n      },\n      {\n        \"type\": \"textarea\",\n        \"key\": \"message\",\n        \"label\": \"Message\",\n        \"validate\": {\n          \"required\": true\n        }\n      }\n    ]\n  },\n  \"status\": \"published\",\n  \"language\": \"en\",\n  \"is_public\": true,\n  \"allow_anonymous\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/forms",
+              "host": ["{{base_url}}"],
+              "path": ["forms"]
+            }
+          }
+        },
+        {
+          "name": "Get Form by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/forms/1",
+              "host": ["{{base_url}}"],
+              "path": ["forms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Form",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Contact Form\",\n  \"description\": \"An updated contact form\",\n  \"status\": \"published\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/forms/1",
+              "host": ["{{base_url}}"],
+              "path": ["forms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Form",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/forms/1",
+              "host": ["{{base_url}}"],
+              "path": ["forms", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Form Components",
+      "item": [
+        {
+          "name": "Get All Components",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/components",
+              "host": ["{{base_url}}"],
+              "path": ["components"]
+            }
+          }
+        },
+        {
+          "name": "Get Components by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/components?category=basic",
+              "host": ["{{base_url}}"],
+              "path": ["components"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "basic"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Components in Arabic",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/components?language=ar",
+              "host": ["{{base_url}}"],
+              "path": ["components"],
+              "query": [
+                {
+                  "key": "language",
+                  "value": "ar"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Component (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"custom_field\",\n  \"label\": \"Custom Field\",\n  \"label_ar\": \"حقل مخصص\",\n  \"key\": \"custom_field\",\n  \"properties\": {\n    \"placeholder\": \"Enter custom value\",\n    \"defaultValue\": \"\"\n  },\n  \"validation\": {\n    \"required\": false,\n    \"minLength\": 0,\n    \"maxLength\": 255\n  },\n  \"category\": \"advanced\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/components",
+              "host": ["{{base_url}}"],
+              "path": ["components"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Form Submissions",
+      "item": [
+        {
+          "name": "Get All Submissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/submissions",
+              "host": ["{{base_url}}"],
+              "path": ["submissions"]
+            }
+          }
+        },
+        {
+          "name": "Submit Form (Public)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"message\": \"Hello, this is a test message.\"\n  },\n  \"metadata\": {\n    \"user_agent\": \"PostmanRuntime/7.28.4\",\n    \"ip_address\": \"127.0.0.1\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/forms/1/submit",
+              "host": ["{{base_url}}"],
+              "path": ["forms", "1", "submit"]
+            }
+          }
+        },
+        {
+          "name": "Get Submission by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/submissions/1",
+              "host": ["{{base_url}}"],
+              "path": ["submissions", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Submission Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"reviewed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/submissions/1",
+              "host": ["{{base_url}}"],
+              "path": ["submissions", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}
